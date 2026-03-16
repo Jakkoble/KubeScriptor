@@ -1,6 +1,6 @@
-# KubeScriptor
+# HexaTask 
 
-KubeScriptor is a distributed task orchestrator designed to execute shell commands securely within isolated Kubernetes environments.
+HexaTask is a distributed task runner designed to execute shell commands securely within isolated docker container environments. HexaTask is built upon the Ports and Adapters (**Hexagonal**) Pattern.
 
 > [!IMPORTANT]
 > **Status:** This project is currently in the active development phase as part of the "Software Architecture 2026" course.
