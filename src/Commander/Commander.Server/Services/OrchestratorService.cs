@@ -1,6 +1,5 @@
 using Commander.Core.Factories;
 using Commander.Core.Ports;
-using Commander.Server.Store;
 using Grpc.Core;
 
 namespace Commander.Server.Services;

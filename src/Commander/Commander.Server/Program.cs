@@ -3,7 +3,6 @@ using Commander.Core.Ports;
 using Commander.Infrastructure.Adapters;
 using Commander.Infrastructure.Configuration;
 using Commander.Server.Services;
-using Commander.Server.Store;
 using Docker.DotNet;
 
 var builder = WebApplication.CreateBuilder(args);

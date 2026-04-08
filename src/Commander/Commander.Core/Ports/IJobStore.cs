@@ -1,6 +1,6 @@
 using Commander.Core.Entities;
 
-namespace Commander.Server.Store;
+namespace Commander.Core.Ports;
 
 public interface IJobStore
 {

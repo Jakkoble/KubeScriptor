@@ -1,7 +1,7 @@
 ﻿using Commander.Core.Entities;
 using Commander.Core.Factories;
 using Commander.Core.Ports;
-using Commander.Server.Store;
+using Commander.Infrastructure.Adapters;
 using Grpc.Core;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
