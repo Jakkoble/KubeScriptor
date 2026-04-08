@@ -19,7 +19,19 @@ func (s *GrpcLogStreamer) SendLog(msg string, isStderr bool) error {
 	})
 }
 
-func (s *GrpcLogStreamer) Close() error {
-	_, err := s.stream.CloseAndRecv()
+func (s *GrpcLogStreamer) Close(exitCode int) error {
+	err := s.stream.Send(&pb.LogMessage{
+		JobId:    s.jobID,
+		Log:      "",
+		IsError:  false,
+		IsFinal:  true,
+		ExitCode: int32(exitCode),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	_, err = s.stream.CloseAndRecv()
 	return err
 }

@@ -17,7 +17,7 @@ func (c *captureStreamer) SendLog(msg string, isStderr bool) error {
 	c.stderrs = append(c.stderrs, isStderr)
 	return nil
 }
-func (c *captureStreamer) Close() error { return nil }
+func (c *captureStreamer) Close(exitCode int) error { return nil }
 
 func TestShellRunner_Echo(t *testing.T) {
 	streamer := &captureStreamer{}

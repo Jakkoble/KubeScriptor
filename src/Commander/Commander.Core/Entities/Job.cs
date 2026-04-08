@@ -19,7 +19,7 @@ public class Job(in string name, in List<string> commands)
 
   public void Finish(bool wasSuccessful)
   {
-    if (Status == JobStatus.Completed || Status == JobStatus.Failed)
+    if (Status != JobStatus.Running)
     {
       throw new InvalidJobStateException("Job has already finished execution!");
     }

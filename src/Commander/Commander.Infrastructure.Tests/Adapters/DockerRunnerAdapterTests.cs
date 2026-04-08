@@ -2,6 +2,7 @@
 using Commander.Infrastructure.Adapters;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Commander.Infrastructure.Tests.Adapters;
@@ -9,6 +10,20 @@ namespace Commander.Infrastructure.Tests.Adapters;
 public class DockerRunnerAdapterTests
 {
   private readonly Job? _job = new("tester", ["ls -la", "echo 'Hello World!'"]);
+
+  private static IOptions<DockerRunnerOptions> DefaultOptions =>
+      Options.Create(new DockerRunnerOptions { Image = "hexatask-runner:latest" });
+
+  private static Mock<IImageOperations> BuildImagesMock()
+  {
+    var mockImages = new Mock<IImageOperations>();
+    mockImages
+        .Setup(i => i.ListImagesAsync(
+            It.IsAny<ImagesListParameters>(),
+            It.IsAny<CancellationToken>()))
+        .ReturnsAsync([new ImagesListResponse()]);
+    return mockImages;
+  }
 
   [Fact]
   public async Task ExecuteJob_CallsCreateAndStart()
@@ -29,8 +44,9 @@ public class DockerRunnerAdapterTests
 
     var mockClient = new Mock<IDockerClient>();
     mockClient.Setup(c => c.Containers).Returns(mockContainers.Object);
+    mockClient.Setup(c => c.Images).Returns(BuildImagesMock().Object); // ← neu
 
-    var adapter = new DockerRunnerAdapter(mockClient.Object);
+    var adapter = new DockerRunnerAdapter(mockClient.Object, DefaultOptions);
 
     await adapter.ExecuteJob(_job!);
 
@@ -62,7 +78,7 @@ public class DockerRunnerAdapterTests
     var mockClient = new Mock<IDockerClient>();
     mockClient.Setup(c => c.Containers).Returns(mockContainers.Object);
 
-    var adapter = new DockerRunnerAdapter(mockClient.Object);
+    var adapter = new DockerRunnerAdapter(mockClient.Object, DefaultOptions);
 
     await adapter.StopJob(_job!, true);
 
