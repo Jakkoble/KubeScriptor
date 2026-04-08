@@ -10,7 +10,7 @@ builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
 
 builder.Services.AddSingleton<IRunnerPort, DockerRunnerAdapter>();
-builder.Services.AddSingleton<JobDefinitionFactory>();
+builder.Services.AddSingleton<IJobDefinitionFactory, JobDefinitionFactory>();
 builder.Services.AddSingleton<IJobStore, InMemoryJobStore>();
 
 var app = builder.Build();
