@@ -1,5 +1,5 @@
 using Commander.Core.Entities;
-using Commander.Server.Store;
+using Commander.Core.Ports;
 using Grpc.Core;
 
 namespace Commander.Server.Services;

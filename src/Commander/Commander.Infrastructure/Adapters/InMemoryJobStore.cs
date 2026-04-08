@@ -1,7 +1,8 @@
 using System.Collections.Concurrent;
 using Commander.Core.Entities;
+using Commander.Core.Ports;
 
-namespace Commander.Server.Store;
+namespace Commander.Infrastructure.Adapters;
 
 public class InMemoryJobStore : IJobStore
 {
