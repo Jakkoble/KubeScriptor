@@ -4,6 +4,6 @@ namespace Commander.Server.Store;
 
 public interface IJobStore
 {
-  void StoreJob(Job job);
+  bool StoreJob(Job job);
   Job GetJob(Guid jobId);
 }

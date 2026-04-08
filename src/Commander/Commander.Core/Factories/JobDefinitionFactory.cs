@@ -4,7 +4,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Commander.Core.Factories;
 
-public class JobDefinitionFactory
+public class JobDefinitionFactory : IJobDefinitionFactory
 {
   private readonly IDeserializer _deserializer;
 

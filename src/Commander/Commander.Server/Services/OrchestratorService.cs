@@ -5,7 +5,7 @@ using Grpc.Core;
 
 namespace Commander.Server.Services;
 
-public class OrchestratorService(JobDefinitionFactory factory, IRunnerPort runnerPort, ILogger<OrchestratorService> logger, IJobStore store) : Commander.OrchestratorService.OrchestratorServiceBase
+public class OrchestratorService(IJobDefinitionFactory factory, IRunnerPort runnerPort, ILogger<OrchestratorService> logger, IJobStore store) : Commander.OrchestratorService.OrchestratorServiceBase
 {
   public override async Task<SubmitJobResponse> SubmitJob(SubmitJobRequest request, ServerCallContext context)
   {
