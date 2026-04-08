@@ -43,7 +43,7 @@ public class OrchestratorServiceTests
     _runnerPortMock.Verify(
       port => port.ExecuteJob(It.Is<Job>(j =>
         j.Name == "my-super-test-job" &&
-        j.Status == JobStatus.Running)),
+        j.Status == JobStatus.Pending)),
       Times.Once);
   }
 

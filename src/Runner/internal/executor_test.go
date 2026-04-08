@@ -13,7 +13,7 @@ type mockStreamer struct {
 }
 
 func (m *mockStreamer) SendLog(_ string, _ bool) error { return nil }
-func (m *mockStreamer) Close() error {
+func (m *mockStreamer) Close(exitCode int) error {
 	m.closed = true
 	return nil
 }

@@ -6,7 +6,7 @@ import (
 
 type ILogStreamer interface {
 	SendLog(msg string, isStderr bool) error
-	Close() error
+	Close(exitCode int) error
 }
 
 type ICommandRunner interface {
@@ -23,17 +23,16 @@ func NewTaskExecutor(runner ICommandRunner, streamer ILogStreamer) *TaskExecutor
 }
 
 func (e *TaskExecutor) Execute(ctx context.Context, commands []string) int {
-	defer e.streamer.Close()
+	exitCode := 0
 
 	for _, cmdStr := range commands {
-		exitCode, err := e.runner.Run(ctx, cmdStr, e.streamer)
-		if err != nil {
-			return 1
-		}
-
-		if exitCode != 0 {
-			return exitCode
+		code, err := e.runner.Run(ctx, cmdStr, e.streamer)
+		if err != nil || code != 0 {
+			exitCode = max(code, 1)
+			break
 		}
 	}
-	return 0
+
+	e.streamer.Close(exitCode)
+	return exitCode
 }

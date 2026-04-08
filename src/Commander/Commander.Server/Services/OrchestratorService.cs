@@ -22,7 +22,6 @@ public class OrchestratorService(IJobDefinitionFactory factory, IRunnerPort runn
         throw new RpcException(new Status(StatusCode.Internal, "Failed to store job."));
       }
 
-      job.StartRunning();
       await runnerPort.ExecuteJob(job);
 
       return new SubmitJobResponse

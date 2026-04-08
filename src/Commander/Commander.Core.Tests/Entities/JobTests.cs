@@ -37,6 +37,14 @@ public class JobTests
     Assert.Throws<InvalidJobStateException>(job.StartRunning);
   }
 
+  [Fact]
+  public void Finish_CannotFinishPendingJob()
+  {
+    var job = new Job("Test", ["cmd"]);
+
+    Assert.Throws<InvalidJobStateException>(() => job.Finish(true));
+  }
+
   [Theory]
   [InlineData(true, JobStatus.Completed)]
   [InlineData(false, JobStatus.Failed)]

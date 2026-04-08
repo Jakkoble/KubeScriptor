@@ -24,7 +24,6 @@ const _ = grpc.SupportPackageIsVersion7
 type RunnerServiceClient interface {
 	GetJobDetails(ctx context.Context, in *GetJobDetailsRequest, opts ...grpc.CallOption) (*GetJobDetailsResponse, error)
 	StreamLogs(ctx context.Context, opts ...grpc.CallOption) (RunnerService_StreamLogsClient, error)
-	UpdateJobStatus(ctx context.Context, in *UpdateJobStatusRequest, opts ...grpc.CallOption) (*UpdateJobStatusResponse, error)
 }
 
 type runnerServiceClient struct {
@@ -78,22 +77,12 @@ func (x *runnerServiceStreamLogsClient) CloseAndRecv() (*StreamLogsResponse, err
 	return m, nil
 }
 
-func (c *runnerServiceClient) UpdateJobStatus(ctx context.Context, in *UpdateJobStatusRequest, opts ...grpc.CallOption) (*UpdateJobStatusResponse, error) {
-	out := new(UpdateJobStatusResponse)
-	err := c.cc.Invoke(ctx, "/runner.RunnerService/UpdateJobStatus", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // RunnerServiceServer is the server API for RunnerService service.
 // All implementations must embed UnimplementedRunnerServiceServer
 // for forward compatibility
 type RunnerServiceServer interface {
 	GetJobDetails(context.Context, *GetJobDetailsRequest) (*GetJobDetailsResponse, error)
 	StreamLogs(RunnerService_StreamLogsServer) error
-	UpdateJobStatus(context.Context, *UpdateJobStatusRequest) (*UpdateJobStatusResponse, error)
 	mustEmbedUnimplementedRunnerServiceServer()
 }
 
@@ -106,9 +95,6 @@ func (UnimplementedRunnerServiceServer) GetJobDetails(context.Context, *GetJobDe
 }
 func (UnimplementedRunnerServiceServer) StreamLogs(RunnerService_StreamLogsServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamLogs not implemented")
-}
-func (UnimplementedRunnerServiceServer) UpdateJobStatus(context.Context, *UpdateJobStatusRequest) (*UpdateJobStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateJobStatus not implemented")
 }
 func (UnimplementedRunnerServiceServer) mustEmbedUnimplementedRunnerServiceServer() {}
 
@@ -167,24 +153,6 @@ func (x *runnerServiceStreamLogsServer) Recv() (*LogMessage, error) {
 	return m, nil
 }
 
-func _RunnerService_UpdateJobStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateJobStatusRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RunnerServiceServer).UpdateJobStatus(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/runner.RunnerService/UpdateJobStatus",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RunnerServiceServer).UpdateJobStatus(ctx, req.(*UpdateJobStatusRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // RunnerService_ServiceDesc is the grpc.ServiceDesc for RunnerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -195,10 +163,6 @@ var RunnerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetJobDetails",
 			Handler:    _RunnerService_GetJobDetails_Handler,
-		},
-		{
-			MethodName: "UpdateJobStatus",
-			Handler:    _RunnerService_UpdateJobStatus_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

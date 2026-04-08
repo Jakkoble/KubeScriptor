@@ -28,6 +28,8 @@ public class RunnerService(ILogger<RunnerService> logger, IJobStore store) : Com
       throw new RpcException(new Status(StatusCode.InvalidArgument, "Job not found"));
     }
 
+    job.StartRunning();
+
     var response = new GetJobDetailsResponse();
     response.Commands.AddRange(job.Commands);
 
@@ -38,6 +40,16 @@ public class RunnerService(ILogger<RunnerService> logger, IJobStore store) : Com
   {
     await foreach (var response in requestStream.ReadAllAsync())
     {
+      if (response.IsFinal)
+      {
+        if (Guid.TryParse(response.JobId, out var guid))
+        {
+          var job = store.GetJob(guid);
+          job.Finish(response.ExitCode == 0);
+        }
+        break;
+      }
+
       Console.Write(response.IsError ? "Error from " : "Log from ");
       Console.WriteLine($"{response.JobId}: {response.Log}");
     }
