@@ -11,16 +11,6 @@ public class DockerRunnerAdapter(in IDockerClient client) : IRunnerPort
 
   public async Task ExecuteJob(Job job)
   {
-    // await _client.Images.CreateImageAsync(
-    //   parameters: new ImagesCreateParameters
-    //   {
-    //     FromImage = "ubuntu",
-    //     Tag = "latest",
-    //   },
-    //   authConfig: null,
-    //   progress: new Progress<JSONMessage>()
-    // );
-
     var response = await _client.Containers.CreateContainerAsync(new CreateContainerParameters()
     {
       Image = "hexatask-runner:latest",

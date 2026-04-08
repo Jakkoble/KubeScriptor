@@ -15,7 +15,6 @@ public class JobDefinitionFactory : IJobDefinitionFactory
       .Build();
   }
 
-
   public Job CreateFromYaml(string? yamlPayload)
   {
     if (string.IsNullOrWhiteSpace(yamlPayload))
@@ -45,7 +44,6 @@ public class JobDefinitionFactory : IJobDefinitionFactory
   private class JobDto
   {
     public required string Name { get; set; }
-    public required string Image { get; set; }
     public required List<string> Commands { get; set; }
   }
 }
