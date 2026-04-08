@@ -5,7 +5,7 @@ using Docker.DotNet.Models;
 
 namespace Commander.Infrastructure.Adapters;
 
-public class DockerRunnerAdapter(in IDockerClient client) : IRunnerPort
+public class DockerRunnerAdapter(IDockerClient client) : IRunnerPort
 {
   private readonly IDockerClient _client = client;
 
