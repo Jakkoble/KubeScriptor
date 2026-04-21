@@ -1,9 +1,9 @@
 use crossterm::event::{KeyCode, KeyEventKind};
 use ratatui::{
-    layout::{Constraint, Layout},
+    layout::{Alignment, Constraint, Layout},
     style::{Color, Style},
     text::Text,
-    widgets::{Block, List, ListState, Paragraph},
+    widgets::{Block, List, ListState, Paragraph, Wrap},
 };
 
 use crate::{action::Action, app::Job, components::Component};
@@ -15,15 +15,37 @@ pub(crate) struct JobList {
 
 impl JobList {
     pub(crate) fn new(jobs: Vec<Job>) -> Self {
+        let initial_selection = if jobs.is_empty() { None } else { Some(0) };
+
         Self {
             jobs,
-            list_state: ListState::default().with_selected(Some(0)),
+            list_state: ListState::default().with_selected(initial_selection),
         }
     }
 }
 
 impl Component for JobList {
     fn render(&mut self, f: &mut ratatui::Frame, rect: ratatui::prelude::Rect) {
+        if self.jobs.is_empty() {
+            let content_area = rect.centered(Constraint::Length(80), Constraint::Length(8));
+
+            let empty_message = r"Add job files to the configured jobs directory.
+                See the project documentation for setup details:
+
+                https://github.com/Jakkoble/HexaTask
+
+                Press Q to quit.
+                ";
+
+            let popup = Paragraph::new(empty_message)
+                .alignment(Alignment::Center)
+                .wrap(Wrap { trim: true })
+                .block(Block::bordered().title_top("No jobs found"));
+
+            f.render_widget(popup, content_area);
+            return;
+        }
+
         let chunks = Layout::default()
             .direction(ratatui::layout::Direction::Horizontal)
             .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
