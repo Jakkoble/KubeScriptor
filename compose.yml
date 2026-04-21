@@ -10,11 +10,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 5271 || exit 1"]
+      test: ["CMD-SHELL", "echo > /dev/tcp/localhost/5271 || exit 1"]
       interval: 3s
       timeout: 5s
       retries: 10
-      start_period: 5s
+      start_period: 10s
 
   tui:
     image: ghcr.io/jakkoble/hexatask-tui:latest
