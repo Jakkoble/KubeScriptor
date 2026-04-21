@@ -10,20 +10,20 @@ use crate::{
 };
 
 #[derive(Clone)]
-pub struct Job {
-    pub name: String,
-    pub raw: String,
+pub(crate) struct Job {
+    pub(crate) name: String,
+    pub(crate) raw: String,
 }
 
-pub struct App {
+pub(crate) struct App {
     should_quit: bool,
     config: Config,
-    pub screen: Box<dyn Component>,
-    pub client: Box<dyn CommanderClientApi>,
+    screen: Box<dyn Component>,
+    client: Box<dyn CommanderClientApi>,
 }
 
 impl App {
-    pub fn new(config: Config, client: Box<dyn CommanderClientApi>) -> Self {
+    pub(crate) fn new(config: Config, client: Box<dyn CommanderClientApi>) -> Self {
         let jobs = Self::get_jobs(&config.job_dir);
 
         Self {
@@ -34,7 +34,7 @@ impl App {
         }
     }
 
-    pub async fn run(
+    pub(crate) async fn run(
         &mut self,
         terminal: &mut ratatui::DefaultTerminal,
     ) -> Result<(), ClientError> {

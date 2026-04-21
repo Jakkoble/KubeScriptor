@@ -1,4 +1,4 @@
-pub mod orchestrator {
+mod orchestrator {
     tonic::include_proto!("orchestrator");
 }
 
@@ -10,21 +10,21 @@ use tokio::sync::mpsc;
 use tokio_stream::StreamExt;
 use tonic::transport::Channel;
 
-pub type ClientError = Box<dyn Error>;
-pub type JobLogReceiver = mpsc::UnboundedReceiver<String>;
+pub(crate) type ClientError = Box<dyn Error>;
+pub(crate) type JobLogReceiver = mpsc::UnboundedReceiver<String>;
 
 #[async_trait]
-pub trait CommanderClientApi {
+pub(crate) trait CommanderClientApi {
     async fn submit_job(&self, yaml_payload: String) -> Result<String, ClientError>;
     async fn monitor_job(&self, job_id: String) -> Result<JobLogReceiver, ClientError>;
 }
 
-pub struct CommanderClient {
+pub(crate) struct CommanderClient {
     client: OrchestratorServiceClient<Channel>,
 }
 
 impl CommanderClient {
-    pub async fn connect(addr: &str) -> Result<Self, ClientError> {
+    pub(crate) async fn connect(addr: &str) -> Result<Self, ClientError> {
         let client = OrchestratorServiceClient::connect(addr.to_string()).await?;
 
         Ok(Self { client })

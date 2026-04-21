@@ -8,13 +8,13 @@ use ratatui::{
 
 use crate::{action::Action, app::Job, components::Component};
 
-pub struct JobList {
-    pub jobs: Vec<Job>,
-    pub list_state: ListState,
+pub(crate) struct JobList {
+    jobs: Vec<Job>,
+    list_state: ListState,
 }
 
 impl JobList {
-    pub fn new(jobs: Vec<Job>) -> Self {
+    pub(crate) fn new(jobs: Vec<Job>) -> Self {
         Self {
             jobs,
             list_state: ListState::default().with_selected(Some(0)),

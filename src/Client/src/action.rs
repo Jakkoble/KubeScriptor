@@ -1,6 +1,6 @@
 use crate::app::Job;
 
-pub enum Action {
+pub(crate) enum Action {
     Quit,
     SelectJob(Job),
     OpenJobList,

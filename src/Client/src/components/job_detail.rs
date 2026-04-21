@@ -6,14 +6,14 @@ use ratatui::{
 
 use crate::{action::Action, client::JobLogReceiver, components::Component};
 
-pub struct JobDetail {
-    pub job_id: String,
+pub(crate) struct JobDetail {
+    job_id: String,
     logs: Vec<String>,
     log_rx: JobLogReceiver,
 }
 
 impl JobDetail {
-    pub fn new(job_id: String, log_rx: JobLogReceiver) -> Self {
+    pub(crate) fn new(job_id: String, log_rx: JobLogReceiver) -> Self {
         Self {
             job_id,
             logs: Vec::new(),

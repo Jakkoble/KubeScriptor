@@ -3,10 +3,10 @@ use ratatui::{Frame, layout::Rect};
 
 use crate::action::Action;
 
-pub mod job_detail;
-pub mod job_list;
+pub(crate) mod job_detail;
+pub(crate) mod job_list;
 
-pub trait Component {
+pub(crate) trait Component {
     fn handle_events(&mut self, event: Option<Event>) -> Option<Action> {
         match event {
             Some(Event::Key(key_event)) => self.handle_key_events(key_event),
