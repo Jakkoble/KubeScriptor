@@ -88,13 +88,14 @@ impl App {
             .filter_map(|entry| {
                 let item = entry.ok()?;
                 let file_type = item.file_type().ok()?;
+                let file_name = item.file_name().into_string().ok()?;
 
-                if !file_type.is_file() {
+                if !file_type.is_file() || !file_name.ends_with(".yaml") {
                     return None;
                 }
 
                 Some(Job {
-                    name: item.file_name().into_string().ok()?,
+                    name: file_name,
                     raw: fs::read_to_string(item.path()).ok()?,
                 })
             })
