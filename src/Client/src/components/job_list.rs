@@ -2,7 +2,7 @@ use crossterm::event::{KeyCode, KeyEventKind};
 use ratatui::{
     layout::{Alignment, Constraint, Layout},
     style::{Color, Style},
-    text::Text,
+    text::{Line, Span, Text},
     widgets::{Block, List, ListState, Paragraph, Wrap},
 };
 
@@ -40,16 +40,19 @@ impl Component for JobList {
             let popup = Paragraph::new(empty_message)
                 .alignment(Alignment::Center)
                 .wrap(Wrap { trim: true })
-                .block(Block::bordered().title_top("No jobs found"));
+                .block(Block::bordered().title_top(" No jobs found "));
 
             f.render_widget(popup, content_area);
             return;
         }
 
+        let [main_chunk, status_chunk] =
+            Layout::vertical([Constraint::Fill(1), Constraint::Length(3)]).areas(rect);
+
         let chunks = Layout::default()
             .direction(ratatui::layout::Direction::Horizontal)
             .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
-            .split(rect);
+            .split(main_chunk);
 
         let items = self
             .jobs
@@ -59,9 +62,9 @@ impl Component for JobList {
 
         let list = List::new(items)
             .style(Color::White)
-            .highlight_style(Style::new().cyan().italic())
+            .highlight_style(Style::new().magenta().italic())
             .highlight_symbol("> ")
-            .scroll_padding(1);
+            .block(Block::bordered().title_top(" Select a job to run "));
 
         f.render_stateful_widget(list, chunks[0], &mut self.list_state);
 
@@ -71,11 +74,42 @@ impl Component for JobList {
                 None => "Job not found".to_string(),
             };
 
-            let paragraph =
-                Paragraph::new(content).block(Block::bordered().title_top("Selected job"));
+            let paragraph = Paragraph::new(content)
+                .style(Style::new().dark_gray())
+                .block(
+                    Block::bordered()
+                        .title_top(" Job Preview ")
+                        .border_style(Style::new().dark_gray()),
+                );
 
             f.render_widget(paragraph, chunks[1]);
         }
+
+        let status_line = Line::from(vec![
+            Span::styled(" Navigate ", Style::new().black().on_cyan()),
+            Span::raw(" "),
+            Span::styled("j", Style::new().cyan()),
+            Span::raw("/"),
+            Span::styled("k", Style::new().cyan()),
+            Span::raw(" or "),
+            Span::styled("↑", Style::new().cyan()),
+            Span::raw("/"),
+            Span::styled("↓", Style::new().cyan()),
+            Span::raw("   "),
+            Span::styled(" Select Job ", Style::new().black().on_green()),
+            Span::raw(" "),
+            Span::styled("Enter", Style::new().green()),
+            Span::raw("   "),
+            Span::styled(" Quit ", Style::new().black().on_red()),
+            Span::raw(" "),
+            Span::styled("q", Style::new().red()),
+            Span::raw("/"),
+            Span::styled("Esc", Style::new().red()),
+        ]);
+
+        let status = Paragraph::new(status_line).block(Block::bordered().title_top(" Controls "));
+
+        f.render_widget(status, status_chunk);
     }
 
     fn handle_key_events(&mut self, key: crossterm::event::KeyEvent) -> Option<Action> {
@@ -111,6 +145,7 @@ impl Component for JobList {
 mod tests {
     use super::*;
     use crossterm::event::{KeyEvent, KeyEventState, KeyModifiers};
+    use ratatui::{Terminal, backend::TestBackend};
 
     fn job(name: &str) -> Job {
         Job {
@@ -164,5 +199,29 @@ mod tests {
             list.handle_key_events(key_event(KeyCode::Esc)),
             Some(Action::Quit)
         ));
+    }
+
+    #[test]
+    fn render_displays_status_line_controls() {
+        let backend = TestBackend::new(100, 12);
+        let mut terminal = Terminal::new(backend).expect("test terminal should be created");
+        let mut list = JobList::new(vec![job("a.yaml"), job("b.yaml")]);
+        list.list_state.select(Some(1));
+
+        terminal
+            .draw(|frame| list.render(frame, frame.area()))
+            .expect("job list should render");
+
+        let buffer = terminal.backend().buffer().clone();
+        let rendered = buffer
+            .content()
+            .iter()
+            .map(|cell| cell.symbol())
+            .collect::<String>();
+
+        assert!(rendered.contains("Controls"));
+        assert!(rendered.contains("Navigate"));
+        assert!(rendered.contains("Enter"));
+        assert!(rendered.contains("q"));
     }
 }
