@@ -17,4 +17,6 @@ start: setup
 	trap 'docker compose down' EXIT; \
 	docker compose pull commander tui; \
 	docker compose up -d commander; \
+	echo "Waiting for commander..."; \
+	sleep 5; \
 	docker compose run --rm --use-aliases tui
