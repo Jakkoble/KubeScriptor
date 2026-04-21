@@ -1,8 +1,5 @@
 services:
   commander:
-    build:
-      context: .
-      dockerfile: src/Commander/Dockerfile
     image: ghcr.io/jakkoble/hexatask-commander:latest
     container_name: hexatask-commander
     ports:
@@ -14,9 +11,6 @@ services:
     restart: unless-stopped
 
   tui:
-    build:
-      context: .
-      dockerfile: src/Client/Dockerfile
     image: ghcr.io/jakkoble/hexatask-tui:latest
     depends_on:
       - commander

@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+async-trait = "0.1.89"
 crossterm = "0.29.0"
 ratatui = "0.30.0"
 tonic = "0.14.5"
