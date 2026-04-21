@@ -53,7 +53,7 @@ impl Component for JobList {
 
                     f.render_widget(p, chunks[1]);
                 }
-                None => panic!("JOB NOT FOUND"),
+                None => panic!("Job not found"),
             }
         }
     }
@@ -73,12 +73,15 @@ impl Component for JobList {
                 Action::Ignore
             }
             KeyCode::Char('q') | KeyCode::Esc => Action::Quit,
-            KeyCode::Enter => Action::SelectJob(
-                self.jobs
-                    .get(self.list_state.selected().unwrap())
-                    .unwrap()
-                    .clone(),
-            ),
+            KeyCode::Enter => {
+                if let Some(index) = self.list_state.selected() {
+                    if let Some(job) = self.jobs.get(index) {
+                        return Action::SelectJob(job.clone());
+                    }
+                }
+
+                Action::Ignore
+            }
             _ => Action::Ignore,
         }
     }

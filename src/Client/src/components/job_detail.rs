@@ -3,39 +3,21 @@ use ratatui::{
     text::{Line, Text},
     widgets::{Block, Borders, Paragraph},
 };
-use tokio::sync::mpsc;
-use tokio_stream::StreamExt;
 
-use crate::{action::Action, client::CommanderClient, components::Component};
+use crate::{action::Action, client::JobLogReceiver, components::Component};
 
 pub struct JobDetail {
     pub job_id: String,
     logs: Vec<String>,
-    log_rx: mpsc::UnboundedReceiver<String>,
+    log_rx: JobLogReceiver,
 }
 
 impl JobDetail {
-    pub fn new(job_id: String, mut client: CommanderClient) -> Self {
-        let (tx, rx) = mpsc::unbounded_channel();
-        let id = job_id.clone();
-
-        tokio::spawn(async move {
-            let mut stream = client.monitor_job(id).await.expect("monitor_job failed");
-
-            while let Some(Ok(msg)) = stream.next().await {
-                let prefix = if msg.is_error { "[ERR] " } else { "[OUT] " };
-                let _ = tx.send(format!("{}{}", prefix, msg.log));
-
-                if msg.is_final {
-                    break;
-                }
-            }
-        });
-
+    pub fn new(job_id: String, log_rx: JobLogReceiver) -> Self {
         Self {
             job_id,
             logs: Vec::new(),
-            log_rx: rx,
+            log_rx,
         }
     }
 }

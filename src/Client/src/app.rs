@@ -1,10 +1,10 @@
-use std::{error::Error, fs, time::Duration};
+use std::{fs, time::Duration};
 
 use crossterm::event;
 
 use crate::{
     action::Action,
-    client::CommanderClient,
+    client::{ClientError, CommanderClientApi},
     components::{Component, job_detail::JobDetail, job_list::JobList},
     config::Config,
 };
@@ -19,23 +19,25 @@ pub struct App {
     should_quit: bool,
     config: Config,
     pub screen: Box<dyn Component>,
+    pub client: Box<dyn CommanderClientApi>,
 }
 
 impl App {
-    pub fn new(config: Config) -> Self {
+    pub fn new(config: Config, client: Box<dyn CommanderClientApi>) -> Self {
         let jobs = Self::get_jobs(&config.job_dir);
 
         Self {
             config,
             should_quit: false,
             screen: Box::new(JobList::new(jobs)),
+            client,
         }
     }
 
     pub async fn run(
         &mut self,
         terminal: &mut ratatui::DefaultTerminal,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), ClientError> {
         while !self.should_quit {
             terminal.draw(|frame| self.screen.render(frame, frame.area()))?;
             self.handle_events().await?;
@@ -44,7 +46,7 @@ impl App {
         Ok(())
     }
 
-    async fn handle_events(&mut self) -> Result<(), Box<dyn Error>> {
+    async fn handle_events(&mut self) -> Result<(), ClientError> {
         let event = if event::poll(Duration::from_millis(100))? {
             Some(event::read()?)
         } else {
@@ -54,10 +56,10 @@ impl App {
         match self.screen.handle_events(event) {
             Action::Quit => self.should_quit = true,
             Action::SelectJob(job) => {
-                let mut client = CommanderClient::connect(&self.config.commander_addr).await?;
-                let job_id = client.submit_job(job.raw).await?;
+                let job_id = self.client.submit_job(job.raw).await?;
+                let log_rx = self.client.monitor_job(job_id.clone()).await?;
 
-                self.screen = Box::new(JobDetail::new(job_id, client));
+                self.screen = Box::new(JobDetail::new(job_id, log_rx));
             }
             Action::OpenJobList => {
                 let jobs = Self::get_jobs(&self.config.job_dir);
