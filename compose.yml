@@ -9,18 +9,11 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "echo > /dev/tcp/localhost/5271 || exit 1"]
-      interval: 3s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
 
   tui:
     image: ghcr.io/jakkoble/hexatask-tui:latest
     depends_on:
-      commander:
-        condition: service_healthy # <-- warten bis Healthcheck OK
+      - commander
     environment:
       COMMANDER_ADDR: http://commander:5271
       JOB_DIR: /app/jobs

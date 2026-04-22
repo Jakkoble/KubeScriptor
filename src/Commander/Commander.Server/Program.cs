@@ -34,4 +34,6 @@ app.MapGrpcService<OrchestratorService>();
 app.MapGrpcService<RunnerService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
+app.MapGet("/health", () => Results.Ok());
+
 app.Run();
