@@ -18,5 +18,8 @@ start: setup
 	docker compose pull commander tui; \
 	docker compose up -d commander; \
 	echo "Waiting for commander..."; \
-	sleep 5; \
+	until curl -sf --http2-prior-knowledge http://localhost:5271/health > /dev/null 2>&1; do \
+		sleep 0.5; \
+	done; \
+	echo "Commander ready!"; \
 	docker compose run --rm --use-aliases tui
