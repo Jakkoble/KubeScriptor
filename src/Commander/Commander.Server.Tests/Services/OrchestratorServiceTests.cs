@@ -1,9 +1,9 @@
 ﻿using Commander.Core.Entities;
 using Commander.Core.Factories;
 using Commander.Core.Ports;
+using Commander.Core.Services;
 using Commander.Infrastructure.Adapters;
 using Grpc.Core;
-using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
 namespace Commander.Server.Tests.Services;
@@ -14,6 +14,7 @@ public class OrchestratorServiceTests
   private readonly Mock<IRunnerPort> _runnerPortMock;
   private readonly IJobStore _store;
   private readonly ILogBus _logBus;
+  private readonly IJobOrchestrationPort _orchestration;
   private readonly Server.Services.OrchestratorService _service;
 
   public OrchestratorServiceTests()
@@ -23,9 +24,8 @@ public class OrchestratorServiceTests
     _store = new InMemoryJobStore();
     _logBus = new InMemoryLogBus();
 
-    var logger = NullLogger<Server.Services.OrchestratorService>.Instance;
-
-    _service = new(_factory, _runnerPortMock.Object, logger, _store, _logBus);
+    _orchestration = new JobOrchestrationService(_factory, _runnerPortMock.Object, _store, _logBus);
+    _service = new(_orchestration);
   }
 
   [Fact]
