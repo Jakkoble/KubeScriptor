@@ -2,10 +2,11 @@
 
 HexaTask is a task runner designed to execute shell commands securely within isolated docker container environments. HexaTask is built upon the Ports and Adapters (**Hexagonal**) Pattern.
 
-<p align="center" style="margin: 2rem 0;">
+<br>
+<p align="center">
   <img src="docs/illustration.svg" alt="HexaTask architecture illustration" width="100%" />
 </p>
-
+<br>
 
 > [!NOTE]
 > **Project Scope & Educational Intent:**
